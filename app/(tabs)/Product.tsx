@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, useWindowDimensions, RefreshControl } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import ProductCard from "./ProductCard";
-import { getProducts } from "@/api/Product"; // ← استدعاء من ملف API
+import ProductCard from "../../components/ProductCard";
+import { getProducts } from "../../api/Product"; // ← استدعاء من ملف API
 
 export default function ProductsScreen() {
   const { width } = useWindowDimensions();
@@ -46,4 +46,4 @@ const styles = StyleSheet.create({
   title: { fontSize: 26, fontWeight: "700", color: "#1a1a1a", marginVertical: 24, textAlign: "center" },
   loading: { flex: 1, textAlign: "center", marginTop: 120, fontSize: 18, color: "#666" },
   error: { flex: 1, textAlign: "center", marginTop: 120, fontSize: 17, color: "red" },
-});
+})

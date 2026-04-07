@@ -1,17 +1,18 @@
+import BackButton from "@/components/BackButton";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
-  View,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
   useWindowDimensions,
-  Alert,
-  ScrollView,
+  View,
 } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
 import { registerUser } from "../../api/UserServices";
 
 export default function RegisterPage() {
@@ -25,7 +26,7 @@ export default function RegisterPage() {
     handleSubmit,
     watch,
     formState: { errors },
-    reset: resetForm,   // ← أضفنا هذا عشان ننظف الفورم كمان
+    reset: resetForm,
   } = useForm();
 
   const password = watch("password");
@@ -34,13 +35,11 @@ export default function RegisterPage() {
     try {
       await registerUser(data.email, data.password, data.name);
 
-      // تنظيف الفورم (اختياري لكن مفيد)
       resetForm();
 
-      // هذا هو الحل المهم: reset الـ navigation stack كامل
       navigation.reset({
         index: 0,
-        routes: [{ name: "login" }],     // غيري "Login" لو اسم الشاشة مختلف عندك
+        routes: [{ name: "login" }],
       });
 
     } catch (err: any) {
@@ -59,6 +58,7 @@ export default function RegisterPage() {
       <View style={styles.overlay} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <BackButton />
         <View style={styles.mainContent}>
           {isLargeScreen ? (
             <View style={styles.largeScreenWrapper}>
@@ -91,10 +91,10 @@ export default function RegisterPage() {
                     rules={{ required: "Email is required" }}
                     render={({ field: { onChange, value } }) => (
                       <>
-                        <TextInput 
-                          placeholder="Email Address" 
-                          style={styles.input} 
-                          onChangeText={onChange} 
+                        <TextInput
+                          placeholder="Email Address"
+                          style={styles.input}
+                          onChangeText={onChange}
                           value={value}
                           keyboardType="email-address"
                           autoCapitalize="none"
@@ -135,8 +135,8 @@ export default function RegisterPage() {
                     <Text style={styles.buttonText}>Create My Account</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity 
-                    style={styles.linkButton} 
+                  <TouchableOpacity
+                    style={styles.linkButton}
                     onPress={() => navigation.navigate("login")}
                     activeOpacity={0.7}
                   >
@@ -172,10 +172,10 @@ export default function RegisterPage() {
                   rules={{ required: "Email is required" }}
                   render={({ field: { onChange, value } }) => (
                     <>
-                      <TextInput 
-                        placeholder="Email Address" 
-                        style={styles.input} 
-                        onChangeText={onChange} 
+                      <TextInput
+                        placeholder="Email Address"
+                        style={styles.input}
+                        onChangeText={onChange}
                         value={value}
                         keyboardType="email-address"
                         autoCapitalize="none"
@@ -216,8 +216,8 @@ export default function RegisterPage() {
                   <Text style={styles.buttonText}>Create My Account</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={styles.linkButton} 
+                <TouchableOpacity
+                  style={styles.linkButton}
                   onPress={() => navigation.navigate("login")}
                   activeOpacity={0.7}
                 >

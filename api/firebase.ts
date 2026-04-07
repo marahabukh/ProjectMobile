@@ -1,6 +1,7 @@
 
 // @/api/firebase.ts   أو src/api/firebase.ts
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -16,5 +17,5 @@ const firebaseConfig = {
 // Initialize
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-
+export const auth = getAuth(app);
 console.log("✅ Firebase initialized successfully - db is ready");

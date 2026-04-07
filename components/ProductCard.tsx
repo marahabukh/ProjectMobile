@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#9f1239",
+    color: "#d25a58",
     textAlign: "right",
   },
 
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
 
   button: {
     marginTop: 10,
-    backgroundColor: "#9f1239",
+    backgroundColor: "#d25a58",
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",

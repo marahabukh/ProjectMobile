@@ -1,21 +1,22 @@
+import BackButton from "@/components/BackButton";
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
-  View,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
   useWindowDimensions,
-  Alert,
-  ScrollView,
+  View,
 } from "react-native";
-import { useForm, Controller } from "react-hook-form";
 import { loginUser } from "../../api/UserServices";
-import { useNavigation } from "@react-navigation/native";   
 
 export default function LoginPage() {
-  const navigation = useNavigation();  
+  const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= 900;
 
@@ -60,6 +61,7 @@ export default function LoginPage() {
       <View style={styles.overlay} />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <BackButton />
         <View style={styles.mainContent}>
           {isLargeScreen ? (
             <View style={styles.largeScreenWrapper}>
