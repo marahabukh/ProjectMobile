@@ -1,18 +1,28 @@
-import React from "react";
+import { getCategories } from "@/api/Category";
+import BackButton from "@/components/BackButton";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 import {
-  View,
+  ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
+  TextInput,
   useWindowDimensions,
-  RefreshControl,
+  View,
 } from "react-native";
-import { useQuery } from "@tanstack/react-query";
 import CategoryCard from "../../components/CategoryCard";
-import { getCategories } from "@/api/Category";
+
+interface Category {
+  id: number;
+  name: string;
+  image: string;
+}
 
 export default function CategoriesScreen() {
   const { width } = useWindowDimensions();
+  const [search, setSearch] = useState("");
 
   const {
     data: categories = [],
@@ -20,79 +30,95 @@ export default function CategoriesScreen() {
     error,
     refetch,
     isRefetching,
-  } = useQuery({
+  } = useQuery<Category[]>({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
 
-  const numColumns = width >= 1200 ? 5 : width >= 900 ? 4 : width >= 600 ? 3 : 2;
+  const numColumns =
+    width >= 1200 ? 5 : width >= 900 ? 4 : width >= 600 ? 3 : 2;
 
-  if (isLoading && !isRefetching) {
-    return <Text style={styles.loading}>جاري التحميل...</Text>;
+  const filteredCategories = categories.filter((item) =>
+    item.name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#333" />
+      </View>
+    );
   }
 
   if (error instanceof Error) {
-    return <Text style={styles.error}>خطأ: {error.message}</Text>;
+    return (
+      <View style={styles.center}>
+        <Text style={styles.emptyText}>خطأ: {error.message}</Text>
+      </View>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>كل الكاتيغوري</Text>
-
-      <FlatList
-        key={`flatlist-${numColumns}`}
-        data={categories}
-        keyExtractor={(item: any) => item.id.toString()}
-        numColumns={numColumns}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.cardWrapper,
-              { width: `${100 / numColumns}%` },
-            ]}
-          >
-            <View style={styles.cardInner}>
-              <CategoryCard
-                id={item.id}
-                name={item.name}
-                image={item.image}
-              />
-            </View>
-          </View>
-        )}
-        contentContainerStyle={styles.listContent}
-        columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            colors={["#000"]}
-            tintColor="#000"
+    <FlatList<Category>
+      key={`flatlist-${numColumns}`}
+      data={filteredCategories}
+      keyExtractor={(item) => item.id.toString()}
+      numColumns={numColumns}
+      renderItem={({ item }) => (
+        <View
+          style={[
+            styles.cardWrapper,
+            { width: `${100 / numColumns}%`, paddingHorizontal: 4 },
+          ]}
+        >
+          <CategoryCard
+            id={item.id}
+            name={item.name}
+            image={item.image}
           />
-        }
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>لا توجد فئات حالياً</Text>
-        }
-      />
-    </View>
+        </View>
+      )}
+      contentContainerStyle={styles.container}
+      columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching}
+          onRefresh={refetch}
+          colors={["#000"]}
+          tintColor="#000"
+        />
+      }
+      ListHeaderComponent={
+        <>
+          <BackButton />
+          <Text style={styles.header}>كل الفئات</Text>
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="...ابحث عن فئة"
+              placeholderTextColor="#aaa"
+              value={search}
+              onChangeText={setSearch}
+              textAlign="right"
+              textAlignVertical="center"
+            />
+          </View>
+        </>
+      }
+      ListEmptyComponent={
+        <View style={styles.center}>
+          <Text style={styles.emptyText}>
+            {search ? "لا توجد نتائج للبحث" : "لا توجد فئات حالياً"}
+          </Text>
+        </View>
+      }
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: "700",
-    color: "#1a1a1a",
-    marginVertical: 24,
-    textAlign: "center",
-    writingDirection: "rtl",
-  },
-  listContent: {
     paddingHorizontal: 8,
     paddingBottom: 20,
   },
@@ -100,32 +126,40 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
   },
   cardWrapper: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
-  cardInner: {
-    paddingHorizontal: 6,
-  },
-  loading: {
-    flex: 1,
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
     textAlign: "center",
-    marginTop: 120,
-    fontSize: 18,
-    color: "#666",
-    writingDirection: "rtl",
+    marginVertical: 20,
+    color: "#333",
   },
-  error: {
-    flex: 1,
-    textAlign: "center",
-    marginTop: 120,
-    fontSize: 17,
-    color: "red",
-    writingDirection: "rtl",
+  searchContainer: {
+    marginHorizontal: 4,
+    marginBottom: 16,
+  },
+  searchInput: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontSize: 15,
+    color: "#333",
+    textAlign: "right",
   },
   emptyText: {
     textAlign: "center",
     marginTop: 100,
     fontSize: 18,
     color: "#666",
-    writingDirection: "rtl",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 100,
   },
 });

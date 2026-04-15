@@ -1,6 +1,13 @@
 import { router } from "expo-router";
 import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity, useWindowDimensions } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
 
 export default function CategoryCard({ id, name, image }: any) {
   const { width } = useWindowDimensions();
@@ -13,7 +20,11 @@ export default function CategoryCard({ id, name, image }: any) {
   return (
     <View style={[styles.card, { width: cardWidth }]}>
       <Image
-        source={{ uri: image || "https://via.placeholder.com/300x300?text=No+Image" }}
+        source={{
+          uri: image && image.trim() !== ""
+            ? image
+            : "https://placehold.co/300x300/eeeeee/999999?text=No+Image",
+        }}
         style={styles.image}
         resizeMode="cover"
       />
@@ -24,9 +35,11 @@ export default function CategoryCard({ id, name, image }: any) {
       <View style={styles.spacer} />
 
       <TouchableOpacity
-        onPress={() => router.push(`/CategoryById/${id}`)} // صفحة عرض المنتجات حسب الكاتيغوري
+        style={styles.button}
+        onPress={() => router.push(`/CategoryById/${id}`)}
+        activeOpacity={0.85}
       >
-        <Text style={styles.buttonText}>View Products</Text>
+        <Text style={styles.buttonText}>عرض الفئة</Text>
       </TouchableOpacity>
     </View>
   );
@@ -51,6 +64,7 @@ const styles = StyleSheet.create({
     height: 165,
     borderRadius: 12,
     marginBottom: 12,
+    backgroundColor: "#f0f0f0", 
   },
   name: {
     fontSize: 16,
@@ -60,9 +74,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   spacer: { flex: 1 },
+  button: {
+    backgroundColor: "#d25a58",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    marginTop: 8,
+  },
   buttonText: {
-    color: "#000",
-    fontWeight: "600",
+    color: "#fff",
+    fontWeight: "700",
     textAlign: "center",
+    fontSize: 15,
+    writingDirection: "rtl",
   },
 });
