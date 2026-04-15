@@ -93,7 +93,7 @@ export default function CategoryProductsScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#C0392B" />
+        <ActivityIndicator size="large" color="#d25a58" />
       </View>
     );
   }
@@ -121,8 +121,8 @@ export default function CategoryProductsScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => fetchProducts(true)}
-          colors={["#C0392B"]}
-          tintColor="#C0392B"
+          colors={["#d25a58"]}
+          tintColor="#d25a58"
         />
       }
       ListHeaderComponent={
