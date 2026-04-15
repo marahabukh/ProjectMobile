@@ -16,19 +16,20 @@ import {
 import ProductCard from "../../components/ProductCard";
 
 interface Product {
-  id: string; 
+  id: string;
   name: string;
-  title: string; 
+  title: string;
   price: number;
   image: string;
   rating?: number;
 }
 
-type SortOption = "price_asc" | "price_desc" | "name";
+type SortOption = "default" | "price_asc" | "price_desc";
 
 const SORT_OPTIONS: { label: string; value: SortOption }[] = [
-  { label: "السعر ↑", value: "price_asc" },
-  { label: "السعر ↓", value: "price_desc" },
+  { label: "افتراضي", value: "default" },
+  { label: "السعر: من الأقل", value: "price_asc" },
+  { label: "السعر: من الأعلى", value: "price_desc" },
 ];
 
 export default function CategoryProductsScreen() {
@@ -40,7 +41,7 @@ export default function CategoryProductsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("price_asc");
+  const [sortBy, setSortBy] = useState<SortOption>("default");
 
   const numColumns =
     width >= 1200 ? 5 : width >= 900 ? 4 : width >= 600 ? 3 : 2;
@@ -81,8 +82,8 @@ export default function CategoryProductsScreen() {
       case "price_desc":
         result.sort((a, b) => b.price - a.price);
         break;
-      case "name":
-        result.sort((a, b) => a.name?.localeCompare(b.name));
+      case "default":
+      default:
         break;
     }
 
@@ -92,7 +93,7 @@ export default function CategoryProductsScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#333" />
+        <ActivityIndicator size="large" color="#C0392B" />
       </View>
     );
   }
@@ -120,8 +121,8 @@ export default function CategoryProductsScreen() {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => fetchProducts(true)}
-          colors={["#000"]}
-          tintColor="#000"
+          colors={["#C0392B"]}
+          tintColor="#C0392B"
         />
       }
       ListHeaderComponent={
@@ -129,12 +130,11 @@ export default function CategoryProductsScreen() {
           <BackButton />
           <Text style={styles.header}>منتجات {categoryName}</Text>
 
-          {/* Search */}
           <View style={styles.searchContainer}>
             <TextInput
               style={styles.searchInput}
-              placeholder="ابحث عن منتج"
-              placeholderTextColor="#aaa"
+              placeholder="...ابحث عن منتج"
+              placeholderTextColor="#bbb"
               value={search}
               onChangeText={setSearch}
               textAlign="right"
@@ -142,7 +142,6 @@ export default function CategoryProductsScreen() {
             />
           </View>
 
-          {/* Sort */}
           <View style={styles.sortContainer}>
             <Text style={styles.sortLabel}>ترتيب:</Text>
             <View style={styles.sortButtons}>
@@ -168,7 +167,6 @@ export default function CategoryProductsScreen() {
             </View>
           </View>
 
-          {/* Count */}
           <Text style={styles.countText}>
             {filteredAndSorted.length} منتج
           </Text>
@@ -177,7 +175,7 @@ export default function CategoryProductsScreen() {
       ListEmptyComponent={
         <View style={styles.center}>
           <Text style={styles.emptyText}>
-            {search ? "لا توجد نتائج للبحث" : "لا توجد منتجات في هذه الفئة"}
+            {search ? "لا يوجد نتائج للبحث" : "لا يوجد منتجات في هذه الفئة"}
           </Text>
         </View>
       }
@@ -188,20 +186,22 @@ export default function CategoryProductsScreen() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
-    paddingBottom: 20,
+    paddingBottom: 32,
   },
   row: {
     flexDirection: "row-reverse",
   },
   cardWrapper: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 26,
+    fontWeight: "800",
     textAlign: "center",
-    marginVertical: 20,
-    color: "#333",
+    marginTop: 12,
+    marginBottom: 20,
+    color: "#1a1a1a",
+    letterSpacing: 0.5,
   },
   searchContainer: {
     marginHorizontal: 4,
@@ -209,14 +209,19 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: "#e8e8e8",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
     fontSize: 15,
-    color: "#333",
+    color: "#222",
     textAlign: "right",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   sortContainer: {
     flexDirection: "row-reverse",
@@ -245,8 +250,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   sortButtonActive: {
-    backgroundColor: "#333",
-    borderColor: "#333",
+    backgroundColor: "#d25a58",
+    borderColor: "#d25a58",
   },
   sortButtonText: {
     fontSize: 13,
@@ -265,9 +270,10 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    fontSize: 18,
-    color: "#666",
-    marginTop: 60,
+    fontSize: 17,
+    color: "#999",
+    marginTop: 80,
+    lineHeight: 28,
   },
   center: {
     flex: 1,
